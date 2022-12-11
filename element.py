@@ -1,0 +1,5 @@
+LINK = "https://www.barco.com/en/clickshare/support/warranty-info"
+COOKIE_BTN = "onetrust-accept-btn-handler"
+TEXTAREA = "SerialNumber"
+SPAN = "field-validation-error"
+RST_ITEM = "c-warranty__result-item"
