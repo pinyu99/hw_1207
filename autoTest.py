@@ -26,144 +26,142 @@ from selenium.webdriver.chrome.service import Service as cService
 from selenium.webdriver.safari.service import Service as sService
 
 import element
-
-
 def logPassword(password, filename):
-    f = open(filename, "a")
-    f.write("{0} -- {1}\n".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M"), password))
-    f.close()
-
+            f = open(filename, "a")
+            f.write("{0} -- {1}\n".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M"), password))
+            f.close()
+            
 def randomSymGenerate(size:int)->str:
-    '''
-    Generate random characters for testing
-
-    param size: int, length of generated string
-    '''
-    special = string.punctuation
-    specialStr = random.sample(special,size)
-    random.shuffle(specialStr)
-    return ''.join(specialStr)
-
+            '''
+            Generate random characters for testing
+        
+            param size: int, length of generated string
+            '''
+            special = string.punctuation
+            specialStr = random.sample(special,size)
+            random.shuffle(specialStr)
+            return ''.join(specialStr)
+    
 def randomStrGenerate(size:int)->str:
-    '''
-    Generate random characters for testing
-
-    param size: int, length of generated string
-    '''
-    return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(5))
-
+            '''
+            Generate random characters for testing
+        
+            param size: int, length of generated string
+            '''
+            return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(5))
+        
+class warrantyCheck():
     
-def testValidSerialNumber():
-    jsonFilePath = "ValidSerial.json"
-    f = open(jsonFilePath)
-    data = json.load(f)
-    f.close()
-    for key, val in data.items():
-        #driver.find_element("id",ui.TEXTAREA).click()
-        textarea.click()
-        textarea.clear()
-        textarea.send_keys(val)
-        textarea.send_keys(Keys.ENTER)
-        driver.implicitly_wait(20)
-        serialNumber_found = True
-        try:
-            rst_item = driver.find_element("class name",element.RST_ITEM)
-        except NoSuchElementException:
-            serialNumber_found = False
+        def testValidSerialNumber():
+            jsonFilePath = "ValidSerial.json"
+            f = open(jsonFilePath)
+            data = json.load(f)
+            f.close()
+            for key, val in data.items():
+                #driver.find_element("id",ui.TEXTAREA).click()
+                textarea.click()
+                textarea.clear()
+                textarea.send_keys(val)
+                textarea.send_keys(Keys.ENTER)
+                driver.implicitly_wait(20)
+                serialNumber_found = True
+                try:
+                    rst_item = driver.find_element("class name",element.RST_ITEM)
+                except NoSuchElementException:
+                    serialNumber_found = False
+                    
+                if serialNumber_found == True:
+                    result = logPassword(f"testValidSerialNumber phase : SerialNumber {val} found",filename)
+                else:
+                    result = logPassword(f"testValidSerialNumber phase : SerialNumber {val} not found",filename)
+                    
+            return result
+    
+        def testInvalidInput():
+            textarea.click()
+            textarea.clear()
+            input = randomSymGenerate(6)
+            textarea.send_keys(input)
+            textarea.send_keys(Keys.ENTER)
+            sleep(1)
+            spans = driver.find_elements("class name",element.SPAN)
             
-        if serialNumber_found == True:
-            result = logPassword(f"testValidSerialNumber phase : SerialNumber {val} found",filename)
-        else:
-            result = logPassword(f"testValidSerialNumber phase : SerialNumber {val} not found",filename)
+            if spans[0].get_attribute("style") == "display: none;":
+                result = logPassword("testInvalidInput phase : Input is 'Empty'",filename)
+            elif spans[1].get_attribute("style") == "display: none;":
+                result = logPassword("testInvalidInput phase : Input is 'Too short'",filename)
+            elif spans[2].get_attribute("style") ==" display: none;":
+                result = logPassword(f"testInvalidInput phase : Input '{input}', the inpur is invalid number",filename)
+                
+                return result
             
-    return result
+        def testEmptyInput():
+            textarea.click()
+            textarea.clear()
+            textarea.send_keys(Keys.ENTER)
+            sleep(1)
+            spans = driver.find_elements("class name",element.SPAN)
+            
+            if spans[0].get_attribute("style") == "display: none;":
+                result = logPassword("testEmptyInput phase : Empty Msg is not shown",filename)
+            elif spans[1].get_attribute("style") == "display: none;":
+                result = logPassword("testEmptyInput phase : Input is 'Too short' ",filename)
+            elif spans[2].get_attribute("style") ==" display: none;":
+                result = logPassword("testEmptyInput phase : Input is 'Invalid' ",filename)
+                
+            return result
+    
+        def testInputLength():
+            
+            for i in range(1,6):
+                textarea.click()
+                textarea.clear()
+                textarea.send_keys(randomStrGenerate(i))
+                textarea.send_keys(Keys.ENTER)
+                sleep(1)
+                spans = driver.find_elements("class name",element.SPAN)
+                
+                if spans[0].get_attribute("style") == "display: none;":
+                    result = logPassword("testInputLength phase : Input is 'Empty' ",filename)
+                elif spans[1].get_attribute("style") == "display: none;":
+                    result = logPassword("testInputLength phase : Input is 'Too short' ",filename)
+                elif spans[2].get_attribute("style") ==" display: none;":
+                    result = logPassword("testInputLength phase : Input is 'Invalid' ",filename)
+                
+            textarea.click()
+            textarea.clear()
+            textarea.send_keys(randomStrGenerate(6))
+            textarea.send_keys(Keys.ENTER)
+            sleep(1)
+            spans = driver.find_elements("class name",element.SPAN)
+            
+            if spans[0].get_attribute("style") == "display: none;":
+                result = logPassword("testInputLength phase : Input is 'Empty'",filename)
+            elif spans[1].get_attribute("style") == "display: none;":
+                result = logPassword("testInputLength phase : Input is 'Too short' ",filename)
+            elif spans[2].get_attribute("style") ==" display: none;":
+                result = logPassword("testInputLength phase : Input is 'Invalid' ",filename)
+            
+            return result
+    
+        def testLengthAndInvalidInput():
+            textarea.click()
+            textarea.clear()
+            input = randomSymGenerate(3)
+            textarea.send_keys(input)
+            textarea.send_keys(Keys.ENTER)
+            sleep(1)
+            spans = driver.find_elements("class name",element.SPAN)
+            
+            if spans[0].get_attribute("style") == "display: none;":
+                result = logPassword("testLengthAndInvalidInput phase : Input is 'Empty' ",filename)
+            elif spans[1].get_attribute("style") == "display: none;":
+                result = logPassword("testLengthAndInvalidInput phase : Input is 'Too short' ",filename)
+            elif spans[2].get_attribute("style") ==" display: none;":
+                result = logPassword(f"testLengthAndInvalidInput phase : Input '{input}', Input is 'invalid' ",filename)
+                
+            return result
 
-
-def testInvalidInput():
-    textarea.click()
-    textarea.clear()
-    input = randomSymGenerate(6)
-    textarea.send_keys(input)
-    textarea.send_keys(Keys.ENTER)
-    sleep(1)
-    spans = driver.find_elements("class name",element.SPAN)
-    
-    if spans[0].get_attribute("style") == "display: none;":
-        result = logPassword("testInvalidInput phase : Input is 'Empty'",filename)
-    elif spans[1].get_attribute("style") == "display: none;":
-        result = logPassword("testInvalidInput phase : Input is 'Too short'",filename)
-    elif spans[2].get_attribute("style") ==" display: none;":
-        result = logPassword(f"testInvalidInput phase : Input '{input}', the inpur is invalid number",filename)
-        
-    return result
-        
-def testEmptyInput():
-    textarea.click()
-    textarea.clear()
-    textarea.send_keys(Keys.ENTER)
-    sleep(1)
-    spans = driver.find_elements("class name",element.SPAN)
-    
-    if spans[0].get_attribute("style") == "display: none;":
-        result = logPassword("testEmptyInput phase : Empty Msg is not shown",filename)
-    elif spans[1].get_attribute("style") == "display: none;":
-        result = logPassword("testEmptyInput phase : Input is 'Too short' ",filename)
-    elif spans[2].get_attribute("style") ==" display: none;":
-        result = logPassword("testEmptyInput phase : Input is 'Invalid' ",filename)
-        
-    return result
-
-def testInputLength():
-    
-    for i in range(1,6):
-        textarea.click()
-        textarea.clear()
-        textarea.send_keys(randomStrGenerate(i))
-        textarea.send_keys(Keys.ENTER)
-        sleep(1)
-        spans = driver.find_elements("class name",element.SPAN)
-        
-        if spans[0].get_attribute("style") == "display: none;":
-            result = logPassword("testInputLength phase : Input is 'Empty' ",filename)
-        elif spans[1].get_attribute("style") == "display: none;":
-            result = logPassword("testInputLength phase : Input is 'Too short' ",filename)
-        elif spans[2].get_attribute("style") ==" display: none;":
-            result = logPassword("testInputLength phase : Input is 'Invalid' ",filename)
-        
-    textarea.click()
-    textarea.clear()
-    textarea.send_keys(randomStrGenerate(6))
-    textarea.send_keys(Keys.ENTER)
-    sleep(1)
-    spans = driver.find_elements("class name",element.SPAN)
-    
-    if spans[0].get_attribute("style") == "display: none;":
-        result = logPassword("testInputLength phase : Input is 'Empty'",filename)
-    elif spans[1].get_attribute("style") == "display: none;":
-        result = logPassword("testInputLength phase : Input is 'Too short' ",filename)
-    elif spans[2].get_attribute("style") ==" display: none;":
-        result = logPassword("testInputLength phase : Input is 'Invalid' ",filename)
-    
-    return result
-
-def testLengthAndInvalidInput():
-    textarea.click()
-    textarea.clear()
-    input = randomSymGenerate(3)
-    textarea.send_keys(input)
-    textarea.send_keys(Keys.ENTER)
-    sleep(1)
-    spans = driver.find_elements("class name",element.SPAN)
-    
-    if spans[0].get_attribute("style") == "display: none;":
-        result = logPassword("testLengthAndInvalidInput phase : Input is 'Empty' ",filename)
-    elif spans[1].get_attribute("style") == "display: none;":
-        result = logPassword("testLengthAndInvalidInput phase : Input is 'Too short' ",filename)
-    elif spans[2].get_attribute("style") ==" display: none;":
-        result = logPassword(f"testLengthAndInvalidInput phase : Input '{input}', Input is 'invalid' ",filename)
-        
-    return result
-        
 
 if __name__ == "__main__":
     
@@ -186,13 +184,13 @@ if __name__ == "__main__":
     for i ,item in enumerate(testcaseItem):
         
         if item == "testInvalidInput":
-            testInvalidInput()
+            warrantyCheck.testInvalidInput()
         elif item == "testEmptyInput":
-            testEmptyInput()
+            warrantyCheck.testEmptyInput()
         elif item == "testInputLength":
-            testInputLength()
+            warrantyCheck.testInputLength()
         elif item == "testLengthAndInvalidInput":
-            testLengthAndInvalidInput()
+            warrantyCheck.testLengthAndInvalidInput()
         elif item == "testValidSerialNumber":
-            testValidSerialNumber()
+            warrantyCheck.testValidSerialNumber()
     driver.close()
