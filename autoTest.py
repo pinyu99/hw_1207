@@ -1,9 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 '''
-autoTest.py 
-
 This python file run the automated testing for warranty checking.
 "selenium 4.3.0" and webdriver is needing for running the test. 
 '''
