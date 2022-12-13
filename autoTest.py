@@ -4,12 +4,8 @@
 '''
 autoTest.py 
 
-This module simulates the real operation and runs the automation
-testing for the warranty checking function.
-
-Before running the test, please download the correct webdriver and
-make sure "selenium 4.3.0" is correctly installed. 
-
+This python file run the automated testing for warranty checking.
+"selenium 4.3.0" and webdriver is needing for running the test. 
 '''
 
 import sys
@@ -21,9 +17,9 @@ from time import sleep
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.chrome.service import Service as cService
-from selenium.webdriver.safari.service import Service as sService
+from selenium.common.exceptions import noElementException
+from selenium.webdriver.chrome.service import Service as chromeService
+from selenium.webdriver.safari.service import Service as safariService
 
 import element
 def logPassword(password, filename):
@@ -32,52 +28,45 @@ def logPassword(password, filename):
             f.close()
             
 def randomSymGenerate(size:int)->str:
-            '''
-            Generate random characters for testing
-        
-            param size: int, length of generated string
-            '''
+            #Generate random characters for testing
+            #para size: int, length of string
             special = string.punctuation
-            specialStr = random.sample(special,size)
-            random.shuffle(specialStr)
-            return ''.join(specialStr)
+            specialSym = random.sample(special,size)
+            random.shuffle(specialSym)
+            return ''.join(specialSym)
     
 def randomStrGenerate(size:int)->str:
-            '''
-            Generate random characters for testing
-        
-            param size: int, length of generated string
-            '''
+            #Generate random characters
+            #para size: int, length of string
             return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(5))
         
 class warrantyCheck():
     
-        def testValidSerialNumber():
+        def testValidWarranty():
             jsonFilePath = "ValidSerial.json"
             f = open(jsonFilePath)
             data = json.load(f)
             f.close()
             for key, val in data.items():
-                #driver.find_element("id",ui.TEXTAREA).click()
                 textarea.click()
                 textarea.clear()
                 textarea.send_keys(val)
                 textarea.send_keys(Keys.ENTER)
                 driver.implicitly_wait(20)
-                serialNumber_found = True
+                serialNumberFound = True
                 try:
-                    rst_item = driver.find_element("class name",element.RST_ITEM)
-                except NoSuchElementException:
-                    serialNumber_found = False
+                    rstItem = driver.find_element("class name",element.RST_ITEM)
+                except noElementException:
+                    serialNumberFound = False
                     
-                if serialNumber_found == True:
-                    result = logPassword(f"testValidSerialNumber phase : SerialNumber {val} found",filename)
+                if serialNumberFound == True:
+                    result = logPassword(f"testValidWarranty phase : Warranty {val} found",filename)
                 else:
-                    result = logPassword(f"testValidSerialNumber phase : SerialNumber {val} not found",filename)
+                    result = logPassword(f"testValidWarranty phase : Warranty {val} not found",filename)
                     
             return result
     
-        def testInvalidInput():
+        def testInvalidWarranty():
             textarea.click()
             textarea.clear()
             input = randomSymGenerate(6)
@@ -87,15 +76,15 @@ class warrantyCheck():
             spans = driver.find_elements("class name",element.SPAN)
             
             if spans[0].get_attribute("style") == "display: none;":
-                result = logPassword("testInvalidInput phase : Input is 'Empty'",filename)
+                result = logPassword("testInvalidWarranty phase : Input is 'Empty'",filename)
             elif spans[1].get_attribute("style") == "display: none;":
-                result = logPassword("testInvalidInput phase : Input is 'Too short'",filename)
+                result = logPassword("testInvalidWarranty phase : Input is 'Too short'",filename)
             elif spans[2].get_attribute("style") ==" display: none;":
-                result = logPassword(f"testInvalidInput phase : Input '{input}', the inpur is invalid number",filename)
+                result = logPassword(f"testInvalidWarranty phase : Input '{input}', the input is invalid number",filename)
                 
                 return result
             
-        def testEmptyInput():
+        def testEmpty():
             textarea.click()
             textarea.clear()
             textarea.send_keys(Keys.ENTER)
@@ -103,11 +92,11 @@ class warrantyCheck():
             spans = driver.find_elements("class name",element.SPAN)
             
             if spans[0].get_attribute("style") == "display: none;":
-                result = logPassword("testEmptyInput phase : Empty Msg is not shown",filename)
+                result = logPassword("testEmpty phase : Empty Msg is not shown",filename)
             elif spans[1].get_attribute("style") == "display: none;":
-                result = logPassword("testEmptyInput phase : Input is 'Too short' ",filename)
+                result = logPassword("testEmpty phase : Input is 'Too short' ",filename)
             elif spans[2].get_attribute("style") ==" display: none;":
-                result = logPassword("testEmptyInput phase : Input is 'Invalid' ",filename)
+                result = logPassword("testEmpty phase : Input is 'Invalid' ",filename)
                 
             return result
     
@@ -144,7 +133,7 @@ class warrantyCheck():
             
             return result
     
-        def testLengthAndInvalidInput():
+        def testLengthAndInvalid():
             textarea.click()
             textarea.clear()
             input = randomSymGenerate(3)
@@ -154,11 +143,11 @@ class warrantyCheck():
             spans = driver.find_elements("class name",element.SPAN)
             
             if spans[0].get_attribute("style") == "display: none;":
-                result = logPassword("testLengthAndInvalidInput phase : Input is 'Empty' ",filename)
+                result = logPassword("testLengthAndInvalid phase : Input is 'Empty' ",filename)
             elif spans[1].get_attribute("style") == "display: none;":
-                result = logPassword("testLengthAndInvalidInput phase : Input is 'Too short' ",filename)
+                result = logPassword("testLengthAndInvalid phase : Input is 'Too short' ",filename)
             elif spans[2].get_attribute("style") ==" display: none;":
-                result = logPassword(f"testLengthAndInvalidInput phase : Input '{input}', Input is 'invalid' ",filename)
+                result = logPassword(f"testLengthAndInvalid phase : Input '{input}', Input is 'invalid' ",filename)
                 
             return result
 
@@ -166,11 +155,11 @@ class warrantyCheck():
 if __name__ == "__main__":
     
     filename = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M") + '.txt'
-    testcaseItem = ["testInvalidInput","testEmptyInput","testInputLength","testLengthAndInvalidInput","testValidSerialNumber"]
+    testcaseItem = ["testInvalidWarranty","testEmpty","testInputLength","testLengthAndInvalidInput","testValidWarranty"]
     if sys.platform ==  "win32":
-        s = cService(r"./chromedriver")
+        service = chromeService(r"./chromedriver")
     elif sys.platform ==  "darwin":
-        s = sService(r"/usr/bin/safaridriver")
+        service = safariService(r"/usr/bin/safaridriver")
         
     options = webdriver.ChromeOptions()
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
@@ -183,14 +172,14 @@ if __name__ == "__main__":
         
     for i ,item in enumerate(testcaseItem):
         
-        if item == "testInvalidInput":
-            warrantyCheck.testInvalidInput()
-        elif item == "testEmptyInput":
-            warrantyCheck.testEmptyInput()
+        if item == "testInvalidWarranty":
+            warrantyCheck.testInvalidWarranty()
+        elif item == "testEmpty":
+            warrantyCheck.testEmpty()
         elif item == "testInputLength":
             warrantyCheck.testInputLength()
         elif item == "testLengthAndInvalidInput":
             warrantyCheck.testLengthAndInvalidInput()
-        elif item == "testValidSerialNumber":
-            warrantyCheck.testValidSerialNumber()
+        elif item == "testValidWarranty":
+            warrantyCheck.testValidWarranty()
     driver.close()
