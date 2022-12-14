@@ -1,6 +1,6 @@
 '''
 This python file run the automated testing for warranty checking.
-"selenium 4.3.0" and webdriver is needing for running the test. 
+"selenium 4.3.0" and correct ver webdriver is needing for running the test. 
 '''
 
 import sys
